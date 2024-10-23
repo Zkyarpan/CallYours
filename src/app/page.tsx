@@ -1,8 +1,11 @@
+import Container from "@/components/layout/Container";
+
 export default function Home() {
   return (
     <div>
-      CallYours
-      <p>Home component is rendering!</p>
+      <Container>
+        <div>Welcome to CallYours</div>
+      </Container>
     </div>
   );
 }
