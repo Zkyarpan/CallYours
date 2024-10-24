@@ -1,6 +1,7 @@
 import { createServer } from "node:http";
 import next from "next";
 import { Server } from "socket.io";
+import onCall from "./socket-events/onCall.js";
 
 const dev = process.env.NODE_ENV !== "production";
 const hostname = "localhost";
@@ -9,11 +10,13 @@ const port = 3000;
 const app = next({ dev, hostname, port });
 const handler = app.getRequestHandler();
 
+export let io;
+
 app.prepare().then(() => {
   const httpServer = createServer(handler);
 
   // Initialize Socket.IO server with CORS setup
-  const io = new Server(httpServer, {
+  io = new Server(httpServer, {
     cors: {
       origin: "http://localhost:3000", // Allow frontend to connect
       methods: ["GET", "POST"],
@@ -37,7 +40,10 @@ app.prepare().then(() => {
         onlineUsers.push({
           userId: clerkUser.id,
           socketId: socket.id,
-          profile: clerkUser.profile,
+          profile: {
+            fullName: clerkUser.fullName,
+            imageUrl: clerkUser.imageUrl,
+          },
         });
       }
 
@@ -55,6 +61,9 @@ app.prepare().then(() => {
       // Emit the updated list of online users to all clients
       io.emit("getUser", onlineUsers);
     });
+
+    // Call Events
+    socket.on("call", onCall);
   });
 
   // Start the server and listen on the specified port
