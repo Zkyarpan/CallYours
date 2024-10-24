@@ -12,18 +12,52 @@ const handler = app.getRequestHandler();
 app.prepare().then(() => {
   const httpServer = createServer(handler);
 
+  // Initialize Socket.IO server with CORS setup
   const io = new Server(httpServer, {
     cors: {
-      origin: "http://localhost:3000", 
+      origin: "http://localhost:3000", // Allow frontend to connect
       methods: ["GET", "POST"],
     },
   });
 
+  // Array to store online users' information
+  let onlineUsers = [];
+
   io.on("connection", (socket) => {
-    console.log("Client Connected!!");
-    // ...
+    console.log("A user connected with socket id:", socket.id);
+
+    // When a new user logs in, add them to the onlineUsers array
+    socket.on("addNewUser", (clerkUser) => {
+      // Check if the user exists and is not already in the onlineUsers list
+      if (
+        clerkUser &&
+        !onlineUsers.some((user) => user.userId === clerkUser.id)
+      ) {
+        // Add the new user with their userId, socketId, and profile info
+        onlineUsers.push({
+          userId: clerkUser.id,
+          socketId: socket.id,
+          profile: clerkUser.profile,
+        });
+      }
+
+      // Emit the updated list of online users to all clients
+      io.emit("getUser", onlineUsers);
+    });
+
+    // Handle user disconnection
+    socket.on("disconnect", () => {
+      console.log("User disconnected with socket id:", socket.id);
+
+      // Remove the user from the onlineUsers list based on their socketId
+      onlineUsers = onlineUsers.filter((user) => user.socketId === socket.id);
+
+      // Emit the updated list of online users to all clients
+      io.emit("getUser", onlineUsers);
+    });
   });
 
+  // Start the server and listen on the specified port
   httpServer
     .once("error", (err) => {
       console.error(err);
