@@ -36,6 +36,11 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
     (user: SocketUser) => {
       if (!currentSocketUser) return;
 
+      if (user.userId === currentSocketUser.userId) {
+        console.log("You cannot call yourself!");
+        return;
+      }
+
       const participants = { caller: currentSocketUser, receiver: user };
       setOnGoingCall({ participants, isRinging: false });
 
