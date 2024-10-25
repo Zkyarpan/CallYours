@@ -26,26 +26,15 @@ const Navbar = () => {
             <div className="font-bold text-2xl text-gray-800">CallYours</div>
           </div>
 
-          {/* Navigation Links */}
           <div className="flex items-center gap-6">
             <Button variant="link" onClick={() => router.push("/features")}>
               Features
             </Button>
-            <Button variant="link" onClick={() => router.push("/pricing")}>
-              Pricing
-            </Button>
-            <Button variant="link" onClick={() => router.push("/about")}>
-              About
-            </Button>
-            <Button variant="link" onClick={() => router.push("/contact")}>
-              Contact
-            </Button>
           </div>
 
-          {/* Auth Buttons */}
           <div className="gap-3 flex items-center">
             {userId ? (
-              <UserButton afterSignOutUrl="/" />
+              <UserButton />
             ) : (
               <>
                 <Button
