@@ -5,6 +5,7 @@ import { ClerkProvider } from "@clerk/nextjs";
 import Navbar from "@/components/layout/Navbar";
 import Container from "@/components/layout/Container";
 import AppSocketProvider from "../../providers/SocketProvider";
+import Footer from "@/components/layout/Footer";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -34,8 +35,11 @@ export default function RootLayout({
           className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         >
           <AppSocketProvider>
-            <Navbar />
-            <Container>{children || <div>Loading...</div>} </Container>
+            <Container>
+              <Navbar />
+              {children || <div>Loading...</div>}{" "}
+              <Footer/>
+            </Container>
           </AppSocketProvider>
         </body>
       </html>
